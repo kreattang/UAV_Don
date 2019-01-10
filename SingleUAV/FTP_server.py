@@ -37,7 +37,7 @@ handler.authorizer = authorizer
 handler.passive_ports = range(2000, 2333)
 
 #监听ip 和 端口
-server = FTPServer(('192.168.31.16', 8090), handler)
+server = FTPServer(('172.20.10.5', 8090), handler)
 
 #开始服务
 server.serve_forever()

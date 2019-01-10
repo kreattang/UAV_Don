@@ -4,7 +4,7 @@ global img
 global point1, point2
 import UAV_Don.SingleUAV.Center
 import UAV_Don.SingleUAV.Yaw_Angke
-
+import os
 from socket import *
 
 HOST = '192.168.31.105'
@@ -12,13 +12,16 @@ PORT = 7896
 s = socket(AF_INET, SOCK_DGRAM)
 s.connect((HOST, PORT))
 
-import os
+
+
+def single_list(arr, target):
+    return arr.count(target)
 
 def file_name(file_dir):
     L = []
     for root, dirs, files in os.walk(file_dir):
         for file in files:
-            if os.path.splitext(file)[1] == '.jpg':
+            if os.path.splitext(file)[1] == '.png':
                 L.append(int(file[:-4]))
     return max(L)-1
 
@@ -32,6 +35,7 @@ def get_object(path,H_Z,S_Z,V_Z):
         lower_blue = np.array([int(H_Z) - 10, int(S_Z) - 10, int(V_Z) - 10])
         upper_blue = np.array([int(H_Z) + 10, int(S_Z) + 10, int(V_Z) + 10])
         mask = cv2.inRange(HSV, lower_blue, upper_blue)
+        # print("mask:",mask)
         Point = []
         for k in range(0, 576, 5):
             Index = myfind(255, mask[k])
@@ -75,42 +79,39 @@ def on_mouse(event, x, y, flags, param):
         Img2_HSV = cv2.cvtColor(cut_img,cv2.COLOR_BGR2HSV)
         H,S,V = cv2.split(Img2_HSV)
         H_Z,S_Z,V_Z = get_zhongshu(H),get_zhongshu(S),get_zhongshu(V)
+        temp = 0
         while True:
             No_Image = file_name('D:/UAV_image')
-            path = 'D:/UAV_image/' + str(No_Image) + '.jpg'
-            frame = cv2.imread(path)
-            print("正在读：", str(No_Image) + '.jpg')
-            if get_object(path,H_Z,S_Z,V_Z):
-                cx,cy = get_object(path,H_Z,S_Z,V_Z)
-                cv2.circle(frame,(cx,cy), 30, (0, 255, 255), -1)
-                cv2.line(frame,(598,0),(598,576),(255,0,0))
-                cv2.line(frame, (0,288), (1196,288), (255, 0, 0))
-                print("中心：",cx,cy)
-                angle = UAV_Don.SingleUAV.Yaw_Angke.Angle([598,0],[cx,cy],[598,288])
-                print("角度：",angle)
-                message = str(str(5)+','+str(0)+','+str(angle)+','+str(0))
-                s.sendall(message.encode('utf-8'))
-                data = s.recv(1024)
-                print("接收到：",data)
-                cv2.imshow('frame', frame)
-            # os.remove(path)
-            time.sleep(0.1)
+            if int(No_Image)>temp:
+                path = 'D:/UAV_image/' + str(No_Image) + '.png'
+                frame = cv2.imread(path)
+                print("正在读：", str(No_Image) + '.png')
+                if get_object(path, H_Z, S_Z, V_Z):
+                    cx, cy = get_object(path, H_Z, S_Z, V_Z)
+                    cv2.circle(frame, (cx, cy), 30, (0, 255, 255), 0)
+                    cv2.line(frame, (598, 0), (598, 576), (255, 0, 0))
+                    cv2.line(frame, (0, 288), (1196, 288), (255, 0, 0))
+                    cv2.imshow('frame',frame)
+                    temp = int(No_Image)
+            else:
+                print("没有最新图片！")
+                time.sleep(0.1)
             if cv2.waitKey(10) == 27:
                 s.close()
                 break
 
-
-
 def main():
     global img
+    print("修改HOST！")
     No_Image = file_name('D:/UAV_image')
-    path = 'D:/UAV_image/' + str(No_Image) + '.jpg'
+    path = 'D:/UAV_image/' + str(No_Image) + '.png'
     img = cv2.imread(path)
     cv2.namedWindow('image')
     place = cv2.setMouseCallback('image', on_mouse)
     cv2.imshow('image', img)
-    print("正在读(选定)：", str(No_Image) + '.jpg')
+    print("正在读(选定)：", str(No_Image))
     cv2.waitKey(0)
 
 if __name__ == '__main__':
     main()
+

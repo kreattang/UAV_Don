@@ -18,5 +18,24 @@ def Angle(x,y,cent):
     #求得cos_sita的值再反过来计算，绝对长度乘以cos角度为矢量长度，初中知识。。
     angle=np.arccos(cos_angle)
     angle2=int(angle*360/2/np.pi)
+    if x[0] < 598:
+        angle2 = - angle2
     #变为角度
     return angle2
+
+def simple_angle(point,center):
+    angle = 0
+    if point[0] - center[0] >100:
+        if point[1] < center[1]:
+            angle = 10
+        else:
+            angle = 20
+    elif point[0] - center[0] < -100:
+        if point[1] < center[1]:
+            angle = -10
+        else:
+            angle = -20
+    else:
+        angle = 0
+    return angle
+
