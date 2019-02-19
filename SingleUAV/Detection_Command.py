@@ -2,8 +2,8 @@ import cv2,time
 import numpy as np
 global img
 global point1, point2
-import UAV_Don.SingleUAV.Center
-import UAV_Don.SingleUAV.Yaw_Angke
+import SingleUAV.Center
+import SingleUAV.Yaw_Angke
 import os
 from socket import *
 
@@ -42,7 +42,7 @@ def get_object(path,H_Z,S_Z,V_Z):
             if Index:
                 for In in Index:
                     Point.append([k, In])
-        Cen = UAV_Don.SingleUAV.Center.Get_Center(Point)
+        Cen = SingleUAV.Center.Get_Center(Point)
         cx, cy = Cen[0], Cen[1]
         return cy, cx
     except:
@@ -93,12 +93,12 @@ def on_mouse(event, x, y, flags, param):
                     cv2.line(frame, (598, 0), (598, 576), (255, 0, 0))
                     cv2.line(frame, (0, 288), (1196, 288), (255, 0, 0))
                     print("中心：", cx, cy)
-                    angle = UAV_Don.SingleUAV.Yaw_Angke.simple_angle([cx, cy], [598, 288])
+                    angle = SingleUAV.Yaw_Angke.simple_angle([cx, cy], [598, 288])
                     print("角度：", angle)
-                    message = str(str(0) + ',' + str(0.4) + ',' + str(angle) + ',' + str(6))
+                    message = str(str(0) + ',' + str(0.1) + ',' + str(angle) + ',' + str(4))
                     s.sendall(message.encode('utf-8'))
                     # data = s.recv(1024)
-                    print("已发送：", str(str(0) + ',' + str(0.4) + ',' + str(angle) + ',' + str(6)))
+                    print("已发送：", str(str(0) + ',' + str(0.1) + ',' + str(angle) + ',' + str(4)))
 
                     cv2.imshow('frame', frame)
                     temp = int(No_Image)

@@ -27,14 +27,14 @@ def simple_angle(point,center):
     angle = 0
     if point[0] - center[0] >100:
         if point[1] < center[1]:
-            angle = 10
+            angle = 5
         else:
-            angle = 20
+            angle = 10
     elif point[0] - center[0] < -100:
         if point[1] < center[1]:
-            angle = -10
+            angle = -5
         else:
-            angle = -20
+            angle = -10
     else:
         angle = 0
     return angle
